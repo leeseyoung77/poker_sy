@@ -1,5 +1,3 @@
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 
 import '../../game/ai_personality.dart';
@@ -100,11 +98,11 @@ class _NamePlate extends StatelessWidget {
     final profile = player.isHuman
         ? null
         : AiPersonalityProfile.of(player.aiPersonality);
-    final hasAvatar = player.avatarAsset != null;
+    final showAvatar = profile != null;
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: hasAvatar ? 6 : AppSpacing.md,
-        vertical: hasAvatar ? 4 : 7,
+        horizontal: showAvatar ? 6 : AppSpacing.md,
+        vertical: showAvatar ? 4 : 7,
       ),
       decoration: BoxDecoration(
         color: AppColors.bgElevated,
@@ -125,13 +123,11 @@ class _NamePlate extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (hasAvatar) ...[
+          if (showAvatar) ...[
             _InlineAvatar(
-              assetPath: player.avatarAsset!,
-              emoji: profile?.emoji ?? '🙂',
-              accent: profile == null
-                  ? AppColors.accent
-                  : Color(profile.accentArgb),
+              assetPath: player.avatarAsset,
+              emoji: profile.emoji,
+              accent: Color(profile.accentArgb),
               isActor: isActor,
             ),
             const SizedBox(width: 8),
@@ -192,7 +188,7 @@ class _NamePlate extends StatelessWidget {
 }
 
 class _InlineAvatar extends StatelessWidget {
-  final String assetPath;
+  final String? assetPath;
   final String emoji;
   final Color accent;
   final bool isActor;
@@ -206,11 +202,28 @@ class _InlineAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const size = 54.0;
-    final fig = Image.asset(
-      assetPath,
-      fit: BoxFit.cover,
-      errorBuilder: (_, e, s) => _fallback(),
-    );
+    final borderColor = isActor ? AppColors.highlight : accent;
+    Widget inner;
+    if (assetPath == null) {
+      inner = Container(
+        alignment: Alignment.center,
+        color: AppColors.bgSunken,
+        child: Text(
+          emoji,
+          style: const TextStyle(fontSize: 28, height: 1.0),
+        ),
+      );
+    } else {
+      inner = Image.asset(
+        assetPath!,
+        fit: BoxFit.cover,
+        errorBuilder: (_, e, s) => Container(
+          alignment: Alignment.center,
+          color: AppColors.bgSunken,
+          child: Text(emoji, style: const TextStyle(fontSize: 28)),
+        ),
+      );
+    }
     return Container(
       width: size,
       height: size,
@@ -218,51 +231,17 @@ class _InlineAvatar extends StatelessWidget {
         color: AppColors.bgSunken,
         shape: BoxShape.circle,
         border: Border.all(
-          color: isActor ? AppColors.highlight : accent,
+          color: borderColor,
           width: isActor ? 2.5 : 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: (isActor ? AppColors.highlight : accent).withAlpha(110),
+            color: borderColor.withAlpha(110),
             blurRadius: isActor ? 12 : 6,
           ),
         ],
       ),
-      child: ClipOval(
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            if (isActor)
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: ImageFiltered(
-                    imageFilter: ui.ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-                    child: ColorFiltered(
-                      colorFilter: const ColorFilter.mode(
-                        AppColors.highlight,
-                        BlendMode.srcIn,
-                      ),
-                      child: Image.asset(
-                        assetPath,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, e, s) => _fallback(),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            fig,
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _fallback() {
-    return Container(
-      alignment: Alignment.center,
-      color: AppColors.bgElevated,
-      child: Text(emoji, style: const TextStyle(fontSize: 26)),
+      child: ClipOval(child: inner),
     );
   }
 }
