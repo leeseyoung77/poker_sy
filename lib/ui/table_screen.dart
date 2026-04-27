@@ -57,12 +57,14 @@ class _TableScreenState extends State<TableScreen> {
           name: '용이',
           isHuman: false,
           aiPersonality: AiPersonality.aggressive,
+          avatarAsset: 'assets/images/avatar_minsu.png',
         ),
         Player(
           seat: 2,
           name: '세롱',
           isHuman: false,
           aiPersonality: AiPersonality.calculated,
+          avatarAsset: 'assets/images/avatar_jiyoung.png',
         ),
         Player(
           seat: 3,
