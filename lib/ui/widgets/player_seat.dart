@@ -201,7 +201,7 @@ class _InlineAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const size = 54.0;
+    const size = 57.0;
     final borderColor = isActor ? AppColors.highlight : accent;
     Widget inner;
     if (assetPath == null) {

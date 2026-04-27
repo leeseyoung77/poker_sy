@@ -10,7 +10,7 @@ import '../ui/theme.dart';
 
 /// Bump this on every APK release so the updater can compare versions.
 /// It should match the tag you push to GitHub (minus the leading "v").
-const kCurrentAppVersion = '1.0.4';
+const kCurrentAppVersion = '1.0.5';
 
 class UpdateService {
   static const _owner = 'leeseyoung77';
