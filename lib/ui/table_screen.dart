@@ -71,6 +71,7 @@ class _TableScreenState extends State<TableScreen> {
           name: '창호',
           isHuman: false,
           aiPersonality: AiPersonality.timid,
+          avatarAsset: 'assets/images/avatar_hyunwoo.png',
         ),
         Player(
           seat: 4,

@@ -11,7 +11,7 @@ import 'package:image/image.dart' as img;
 ///   ch.png  → assets/images/avatar_hyunwoo.png   (창호)
 Future<void> main() async {
   const jobs = {
-    'yy3.png': 'assets/images/avatar_minsu.png',
+    'ch2.png': 'assets/images/avatar_hyunwoo.png',
   };
 
   for (final e in jobs.entries) {
