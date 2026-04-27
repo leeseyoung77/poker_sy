@@ -3,14 +3,14 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 import '../ui/theme.dart';
 
 /// Bump this on every APK release so the updater can compare versions.
 /// It should match the tag you push to GitHub (minus the leading "v").
-const kCurrentAppVersion = '1.0.3';
+const kCurrentAppVersion = '1.0.4';
 
 class UpdateService {
   static const _owner = 'leeseyoung77';
@@ -116,17 +116,10 @@ class UpdateService {
               ),
               const SizedBox(height: 10),
               const Text(
-                '아래 주소를 브라우저에서 열어 APK를 받아 설치하세요.',
+                '"업데이트" 를 누르면 APK가 자동으로 다운로드됩니다.\n'
+                '다운로드 완료 후 알림(또는 파일)을 탭하면 설치할 수 있습니다.',
                 style: TextStyle(
                     color: AppColors.textSecondary, fontSize: 12),
-              ),
-              const SizedBox(height: 6),
-              SelectableText(
-                apkUrl ?? releaseUrl,
-                style: const TextStyle(
-                  color: AppColors.accent,
-                  fontSize: 11,
-                ),
               ),
               if (notes.isNotEmpty) ...[
                 const SizedBox(height: 12),
@@ -157,15 +150,25 @@ class UpdateService {
           ),
           ElevatedButton(
             onPressed: () async {
-              await Clipboard.setData(
-                ClipboardData(text: apkUrl ?? releaseUrl),
+              final target = apkUrl ?? releaseUrl;
+              final uri = Uri.parse(target);
+              Navigator.pop(ctx);
+              final ok = await launchUrl(
+                uri,
+                mode: LaunchMode.externalApplication,
               );
-              if (ctx.mounted) {
-                Navigator.pop(ctx);
+              if (!ok && context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('업데이트 링크를 복사했습니다'),
-                    duration: Duration(seconds: 2),
+                    content: Text('브라우저를 열 수 없습니다. 링크를 직접 열어주세요.'),
+                    duration: Duration(seconds: 3),
+                  ),
+                );
+              } else if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('다운로드를 시작했습니다 — 알림에서 설치를 눌러주세요'),
+                    duration: Duration(seconds: 4),
                   ),
                 );
               }
@@ -174,7 +177,7 @@ class UpdateService {
               backgroundColor: AppColors.accent,
               foregroundColor: AppColors.bg,
             ),
-            child: const Text('링크 복사'),
+            child: const Text('업데이트'),
           ),
         ],
       ),

@@ -41,6 +41,9 @@ dependencies:
   # Auto-update check against GitHub Releases.
   http: ^1.2.0
 
+  # Open URLs in the system browser (used by the auto-updater on Android).
+  url_launcher: ^6.3.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
